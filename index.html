@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Full-Screen M3U8 Live Stream</title>
+    <style>
+        /* Make the video full screen */
+        body, html {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            height: 100%;
+            background-color: black; /* To fill any gaps around the video */
+        }
+
+        #video {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            object-fit: cover; /* Makes sure the video covers the entire screen */
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Video element for streaming -->
+    <video id="video" autoplay muted playsinline></video>
+
+    <!-- hls.js script for M3U8 playback support on non-Safari browsers -->
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <script>
+        const video = document.getElementById('video');
+        const videoSrc = 'https://streamer3.brownrice.com/whistlerroundhouse/whistlerroundhouse.stream/main_playlist.m3u8'; // Replace with your M3U8 URL
+
+        // Check if the browser supports HLS natively
+        if (video.canPlayType('application/vnd.apple.mpegurl')) {
+            // If Safari, just set the video source directly
+            video.src = videoSrc;
+        } else if (Hls.isSupported()) {
+            // If not Safari, use hls.js
+            const hls = new Hls();
+            hls.loadSource(videoSrc);
+            hls.attachMedia(video);
+            hls.on(Hls.Events.MANIFEST_PARSED, () => {
+                video.play();
+            });
+        } else {
+            alert('This browser does not support M3U8 live streaming.');
+        }
+    </script>
+</body>
+</html>
